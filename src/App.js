@@ -5,7 +5,14 @@ function App() {
   //making an  obj from input field
   const [form, setForm] = useState({});
 
+  //once creating an object push to the array
   const [taskList, setTaskList] = useState([]);
+
+  const totalHrs = taskList.reduce((acc, item) => acc + +item.hr, 0);
+
+  const badHrElm = document.getElementById("badHr");
+
+  const ttlHrPerWeek = 24 * 7;
 
   //getting data from inputs
   const handleOnChange = (e) => {
@@ -21,12 +28,17 @@ function App() {
   const handleOnSubmit = (e) => {
     e.preventDefault();
 
+    if (totalHrs + +form.hr > ttlHrPerWeek) {
+      return alert("Sorry boos not enough time ");
+    }
     //I need to have more properties of an object so I create it here more
     const obj = {
       ...form,
       type: "entry",
       id: randomStr(),
     };
+
+    //before pushing to the array, check total hrs
 
     setTaskList([...taskList, obj]);
   };
@@ -66,6 +78,7 @@ function App() {
     setTaskList(arg);
   };
 
+  //two arrays
   const entry = taskList.filter((item) => item.type === "entry");
 
   const bad = taskList.filter((item) => item.type === "bad");
@@ -115,7 +128,7 @@ function App() {
           </div>
         </form>
 
-        {/* <!-- table area  --> */}
+        {/* <!-- bottom area  --> */}
         <div class="row mt-5 pt-2">
           {/* <!-- 1. entry list --> */}
           <div class="col-md">
@@ -125,9 +138,9 @@ function App() {
               <tbody id="entry">
                 {entry.map((item, i) => (
                   <tr key={item.id}>
-                    <td>${i + 1}</td>
-                    <td>${item.task}</td>
-                    <td>${item.hr}hr</td>
+                    <td>{i + 1}</td>
+                    <td>{item.task}</td>
+                    <td>{item.hr}hr</td>
                     <td class="text-end">
                       <button
                         onClick={() => handleOnDelete(item.id, item.task)}
@@ -136,6 +149,7 @@ function App() {
                         <i class="fa-solid fa-trash"></i>
                       </button>
 
+                      {/* changing type of task  to "bad" */}
                       <button
                         onClick={() => switchTask(item.id, "bad")}
                         class="btn btn-success"
@@ -181,14 +195,19 @@ function App() {
             </table>
 
             <div class="alert alert-info">
-              You could have save = <span id="badHr">0</span>hr
+              You could have save ={" "}
+              <span id="badHr">
+                {bad.reduce((acc, item) => acc + +item.hr, 0)}
+              </span>
+              hr
             </div>
           </div>
         </div>
 
-        {/* <!-- toat time allocated --> */}
+        {/* <!-- total time allocated --> */}
         <div class="alert alert-info">
-          Total hrs per week allocated = <span id="totalHr">0</span>hr
+          Total hrs per week allocated = <span id="totalHr">{totalHrs}</span>
+          hr
         </div>
       </div>
     </div>
